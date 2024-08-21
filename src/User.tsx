@@ -1,92 +1,29 @@
-import { useEffect, useReducer } from 'react';
 import axios from 'axios';
+import useAsync from './useAsync';
 
-interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  address: {
-    street: string;
-    suite: string;
-    city: string;
-    zipcode: string;
-    geo: { lat: string; lng: string };
-  };
-  phone: string;
-  website: string;
-  company: { name: string; catchPhrase: string; bs: string };
-}
-
-interface State {
-  loading: boolean;
-  data?: User[] | null;
-  error?: string | null;
-}
-
-type Action =
-  | { type: 'LOADING' }
-  | { type: 'SUCCESS'; data: User[] }
-  | { type: 'ERROR'; error: string };
-
-function reducer(state: State, action: Action) {
-  switch (action.type) {
-    case 'LOADING':
-      return {
-        loading: true,
-        data: null,
-        error: null,
-      };
-    case 'SUCCESS':
-      return {
-        loading: false,
-        data: action.data,
-        error: null,
-      };
-    case 'ERROR':
-      return {
-        loading: false,
-        data: null,
-        error: action.error,
-      };
-    default:
-      throw new Error(`Unhandled action type: ${action.type}`);
-  }
+async function getUers() {
+  const response = await axios.get(
+    'https://jsonplaceholder.typicode.com/users'
+  );
+  return response.data;
 }
 
 export default function Users() {
-  const [state, dispatch] = useReducer(reducer, {
-    loading: false,
-    data: null,
-    error: null,
-  });
-
-  const fetchUsers = async () => {
-    dispatch({ type: 'LOADING' });
-    try {
-      const response = await axios.get(
-        'https://jsonplaceholder.typicode.com/users'
-        // 'https://jsonplaceholder.typicode.com/users2' //주소를 다르게 바꾸면 404 에러 발생
-      );
-      dispatch({ type: 'SUCCESS', data: response.data });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        dispatch({ type: 'ERROR', error: e.message });
-      } else {
-        dispatch({ type: 'ERROR', error: 'Unkown error' });
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const [state, refetch] = useAsync(getUers, [], true);
 
   const { loading, data: users, error } = state;
 
   if (loading) return <div>로딩중..</div>;
   if (error) return <div>Error occurred: {error}</div>;
-  if (!users) return null;
+  if (!users)
+    return (
+      <button
+        style={{ margin: '24px', background: 'lavender', color: 'royalblue' }}
+        onClick={refetch}
+      >
+        불러오기
+      </button>
+    );
 
   return (
     <>
@@ -98,8 +35,12 @@ export default function Users() {
         ))}
       </ul>
       <button
-        style={{ margin: '24px', background: '#999', color: '#fff' }}
-        onClick={fetchUsers}
+        style={{
+          margin: '24px',
+          background: 'royalblue',
+          color: 'ghostwhite',
+        }}
+        onClick={refetch}
       >
         다시 불러오기
       </button>
