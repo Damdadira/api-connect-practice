@@ -23,30 +23,27 @@ export default function Users() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  console.log(users, setUsers);
-  console.log(loading, setLoading);
-  console.log(error, setError);
+  const fetchUsers = async () => {
+    try {
+      //요청 시작할때는 error, users 초기화
+      setError(null);
+      setUsers(null);
+
+      //loading 상태를 true로 변경
+      setLoading(true);
+
+      const response = await axios.get(
+        'https://jsonplaceholder.typicode.com/users'
+        // 'https://jsonplaceholder.typicode.com/users2' //주소를 다르게 바꾸면 404 에러 발생
+      );
+      setUsers(response.data);
+    } catch (e) {
+      setError(e as Error);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        //요청 시작할때는 error, users 초기화
-        setError(null);
-        setUsers(null);
-
-        //loading 상태를 true로 변경
-        setLoading(true);
-
-        const response = await axios.get(
-          'https://jsonplaceholder.typicode.com/users'
-        );
-        setUsers(response.data);
-      } catch (e) {
-        setError(e as Error);
-      }
-      setLoading(false);
-    };
-
     fetchUsers();
   }, []);
 
@@ -55,12 +52,20 @@ export default function Users() {
   if (!users) return null;
 
   return (
-    <ul>
-      {users.map((user) => (
-        <li key={user.id}>
-          {user.name} ({user.username})
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>
+            {user.name} ({user.username})
+          </li>
+        ))}
+      </ul>
+      <button
+        style={{ margin: '24px', background: '#999', color: '#fff' }}
+        onClick={fetchUsers}
+      >
+        다시 불러오기
+      </button>
+    </>
   );
 }
