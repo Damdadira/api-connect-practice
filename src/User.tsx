@@ -1,49 +1,51 @@
 import axios from 'axios';
 import useAsync from './useAsync';
 
-async function getUers() {
-  const response = await axios.get(
-    'https://jsonplaceholder.typicode.com/users'
+interface User {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  address: {
+    street: string;
+    suite: string;
+    city: string;
+    zipcode: string;
+    geo: { lat: string; lng: string };
+  };
+  phone: string;
+  website: string;
+  company: { name: string; catchPhrase: string; bs: string };
+}
+
+async function getUser(id: number): Promise<User> {
+  console.log(id);
+  const response = await axios.get<User>(
+    `https://jsonplaceholder.typicode.com/users/${id}`
   );
   return response.data;
 }
 
-export default function Users() {
-  const [state, refetch] = useAsync(getUers, [], true);
+type UserProps = {
+  id: number;
+};
 
-  const { loading, data: users, error } = state;
+function User({ id }: UserProps) {
+  const [state] = useAsync(() => getUser(id), [id]);
+  const { loading, data: user, error } = state;
 
   if (loading) return <div>로딩중..</div>;
-  if (error) return <div>Error occurred: {error}</div>;
-  if (!users)
-    return (
-      <button
-        style={{ margin: '24px', background: 'lavender', color: 'royalblue' }}
-        onClick={refetch}
-      >
-        불러오기
-      </button>
-    );
+  if (error) return <div>에러가 발생했습니다</div>;
+  if (!user) return null;
 
   return (
-    <>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>
-            {user.name} ({user.username})
-          </li>
-        ))}
-      </ul>
-      <button
-        style={{
-          margin: '24px',
-          background: 'royalblue',
-          color: 'ghostwhite',
-        }}
-        onClick={refetch}
-      >
-        다시 불러오기
-      </button>
-    </>
+    <div style={{ margin: '24px' }}>
+      <h2 style={{ color: '#97943a' }}>{user.username}</h2>
+      <p style={{ color: '#cac422' }}>
+        <b>Email:</b> {user.email}
+      </p>
+    </div>
   );
 }
+
+export default User;

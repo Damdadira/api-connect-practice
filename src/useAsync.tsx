@@ -1,34 +1,18 @@
-import { useEffect, useReducer } from 'react';
+import { useReducer, useEffect } from 'react';
 
-interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  address: {
-    street: string;
-    suite: string;
-    city: string;
-    zipcode: string;
-    geo: { lat: string; lng: string };
-  };
-  phone: string;
-  website: string;
-  company: { name: string; catchPhrase: string; bs: string };
-}
-
-interface State {
+// Define the types for the state and actions
+interface State<T> {
   loading: boolean;
-  data?: User[] | null;
-  error?: string | null;
+  data: T | null;
+  error: string | null;
 }
 
-type Action =
+type Action<T> =
   | { type: 'LOADING' }
-  | { type: 'SUCCESS'; data: User[] }
+  | { type: 'SUCCESS'; data: T }
   | { type: 'ERROR'; error: string };
 
-function reducer(state: State, action: Action): State {
+function reducer<T>(state: State<T>, action: Action<T>): State<T> {
   switch (action.type) {
     case 'LOADING':
       return {
@@ -53,14 +37,12 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-type CallbackFunction = () => Promise<User[]>;
-
-export default function useAsync(
-  callback: CallbackFunction,
+function useAsync<T>(
+  callback: () => Promise<T>,
   deps: any[] = [],
-  skip: boolean
-): [State, () => void] {
-  const [state, dispatch] = useReducer(reducer, {
+  skip = false
+) {
+  const [state, dispatch] = useReducer(reducer<T>, {
     loading: false,
     data: null,
     error: null,
@@ -79,7 +61,11 @@ export default function useAsync(
   useEffect(() => {
     if (skip) return;
     fetchData();
+    // eslint 설정을 다음 줄에서만 비활성화
+    // eslint-disable-next-line
   }, deps);
 
-  return [state, fetchData];
+  return [state, fetchData] as const;
 }
+
+export default useAsync;
