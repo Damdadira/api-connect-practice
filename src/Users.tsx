@@ -66,11 +66,12 @@ function Users() {
         ))}
       </ul>
       <button
-        style={{ margin: '24px', background: 'darkkhaki', color: 'white' }}
+        style={{ margin: '24px', background: 'darkolivegreen', color: 'white' }}
         onClick={refetch}
       >
         다시 불러오기
       </button>
+      <hr style={{ border: 0, borderTop: '1px solid olive' }} />
       {userId && <User id={userId} />}
     </>
   );
