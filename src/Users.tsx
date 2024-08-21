@@ -66,7 +66,7 @@ function Users() {
         ))}
       </ul>
       <button
-        style={{ margin: '24px', background: 'cornflowerblue', color: 'white' }}
+        style={{ margin: '24px', background: 'darkkhaki', color: 'white' }}
         onClick={refetch}
       >
         다시 불러오기
