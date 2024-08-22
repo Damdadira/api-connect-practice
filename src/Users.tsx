@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import useAsync from './useAsync';
-import User from './User';
-import { PiAcornLight, PiAndroidLogoLight } from 'react-icons/pi';
+import UserTag from './User';
+import { PiAcornLight } from 'react-icons/pi';
 
 interface User {
   id: number;
@@ -72,7 +72,7 @@ function Users() {
         다시 불러오기
       </button>
       <hr style={{ border: 0, borderTop: '1px solid olive' }} />
-      {userId && <User id={userId} />}
+      {userId && <UserTag id={userId} />}
     </>
   );
 }

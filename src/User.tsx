@@ -19,7 +19,6 @@ interface User {
 }
 
 async function getUser(id: number): Promise<User> {
-  console.log(id);
   const response = await axios.get<User>(
     `https://jsonplaceholder.typicode.com/users/${id}`
   );
