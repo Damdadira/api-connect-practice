@@ -23,7 +23,7 @@
 npm install   # 또는 npm i
 
 # 개발 서버 실행
-npm start
+npm run dev
 ```
 <br/>
 
